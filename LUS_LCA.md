@@ -1,4 +1,4 @@
-···
+```
 vector<int> son[N];
 
 int head[N],e[N<<1],ne[N<<1],tp[N<<1],tot;
@@ -45,4 +45,4 @@ void dfs(int u,int f)
     fa[u] = f;
 
 }
-···
+```
