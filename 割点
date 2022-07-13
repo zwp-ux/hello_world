@@ -1,0 +1,45 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+const int N = 1e5 + 5;
+vector<int> edge[N];
+int dfn[N], root[N];
+int ct;
+vector<int> cut_points;
+
+void tarjan(int u, bool isroot)
+{
+    int tot = 0;
+    root[u] = dfn[u] = ++ct;
+    for (auto v : edge[u])
+    {
+        if (!dfn[v])
+        {
+            tarjan(v, 0);
+            root[u] = min(root[u], root[v]);
+            tot += root[v] >= dfn[u];
+        }
+        else
+            root[u] = min(root[u], dfn[v]);
+    }
+    if ((isroot && tot >= 2) || (!isroot && tot >= 1))
+        cut_points.emplace_back(u);
+}
+
+int main()
+{
+    int n, m;
+    cin >> n >> m;
+    for (int i = 1; i <= m; i++)
+    {
+        int u, v;
+        cin >> u >> v;
+        edge[u].emplace_back(v);
+        edge[v].emplace_back(u);
+    }
+    tarjan(1, 1);
+    cout << "cut_points: ";
+    for (auto it : cut_points)
+        cout << it << ' ';
+    return 0;
+}
