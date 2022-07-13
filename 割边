@@ -1,0 +1,48 @@
+#include <bits/stdc++.h>
+using namespace std;
+const int N = 1e5 + 5;
+vector<int> edge[N];
+int dfn[N], root[N], fa[N], ct;
+struct node
+{
+    int u, v;
+};
+vector<node> cut_edge;
+void tarjan(int u)
+{
+    int tot = 0;
+    root[u] = dfn[u] = ++ct;
+    for (auto v : edge[u])
+    {
+        if (!dfn[v])
+        {
+            fa[v] = u;
+            tarjan(v);
+            root[u] = min(root[u], root[v]);
+            if (root[v] > dfn[u])
+                cut_edge.emplace_back(node{u, v});
+        }
+        else if (v != fa[u])
+            root[u] = min(root[u], dfn[v]);
+    }
+}
+int main()
+{
+    int n, m;
+    cin >> n >> m;
+    for (int i = 1; i <= m; i++)
+    {
+        int u, v;
+        cin >> u >> v;
+        edge[u].emplace_back(v);
+        edge[v].emplace_back(u);
+    }
+    tarjan(1);
+    cout << "cut_edge:\n";
+    for (auto it : cut_edge)
+        cout << it.u << "--" << it.v << '\n';
+    return 0;
+}
+————————————————
+版权声明：本文为CSDN博主「hesorchen」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/hesorchen/article/details/118971043
