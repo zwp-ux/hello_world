@@ -1,0 +1,103 @@
+#include <bits/stdc++.h>
+
+#define ll long long
+
+
+using namespace std;
+int next[500001];
+int head[500001];
+int to[500001];
+int cnt;
+
+int son[500001];//求重儿子
+int fa[500001];//父亲结点
+int tol[500001];//子节点个数
+int dep[500001];//深度
+
+int dfn[500001];//dfs序列
+int rnk[500001];//dfs序列所对应的元素
+int top[500001];//链的顶端
+//链式前向星
+void add(int u,int v)
+{
+    next[++cnt]=head[u];
+    head[u]=cnt;
+    to[cnt]=v;
+}
+//第一个dfs求四个  son重儿子  tol儿子结点数
+//dep深度  fa 父节点
+void dfs1(int u,int v)//父亲结点 自己
+{
+    son[v]=-1;
+    tol[v]=1;//本身自己节点
+    dep[v]=dep[u]+1;
+    fa[v]=u;
+    for (int i=head[v];i;i=next[i])
+    {
+        int t=to[i];
+        if(t==u) continue ;
+        dfs1(v,t);
+        tol[v]+=tol[t];
+        if(son[v]==-1||(tol[t]>tol[son[v]])) son[v]=t;
+        //条件1  还未求该节点的重儿子
+        //条件2  目前求得的儿子的子节点个数大于之前求得的个数
+    }
+}
+//第二个dfs求出每条链的顶端节点 用top记录
+//记录dfs序 和dfs序值所对应的节点
+void dfs2(int u,int v) //当前节点  重链的顶端
+{
+    //重链
+    top[u]=v;
+    dfn[v]=cnt++;
+    rnk[cnt]=u;
+    if(son[u]==-1)
+    return ;
+    dfs2(son[u],v);
+
+    //轻链
+    for (int i=head[u];i;i=next[i])
+    {
+        if(to[i]!=son[u]&&to[i]!=fa[u]) dfs2(to[i],to[i]);
+    }
+}
+
+int lca(int a,int b)
+{
+
+    while(top[a]!=top[b]) //不在一条链上的时候 顶端不一样就不再一条链上
+    {
+
+        if(dep[top[a]]>dep[top[b]]) //a位于的链的顶端深度高于b位于的
+        {
+            a=fa[top[a]];  //a就往上跳
+        }
+        else{
+            b=fa[top[b]];
+        }
+    }
+    if(dep[a]>dep[b])
+        return b;
+    else return a;
+}
+
+int main()
+{
+    int n,m,s;
+    cin>>n>>m>>s;
+    for (int i=0;i<n-1;i++)
+    {
+        int a,b;
+        cin>>a>>b;
+        add(b,a);
+        add(a,b);
+    }
+    dfs1(s,s);
+    dfs2(s,s);
+    for (int i=0;i<m;i++)
+    {
+        int a,b;
+        cin>>a>>b;
+        cout<<lca(a,b)<<endl;
+    }
+}
