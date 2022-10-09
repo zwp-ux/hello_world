@@ -1,0 +1,18 @@
+int fa[N],height[N],top;
+struct E{int x,y;}e[N];
+struct Stack{int x,y,add;}st[N];
+
+int findfa(int x)
+{
+	while(x != fa[x]) x = fa[x];
+	return fa[x];
+}
+
+void merge(int x,int y)
+{
+	int fx = findfa(x),fy = findfa(y);
+	if(height[fx] > height[fy]) swap(fx,fy);
+	st[++top] = (Stack){fx,fy,height[fx] == height[fy]};
+	fa[fx] = fy;
+	if(height[fx] == height[fy]) height[fy]++;
+}
